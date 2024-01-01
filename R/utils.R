@@ -17,10 +17,10 @@ check_inputs <- function(bio, bio_name,
     if(!is.null(prompt_fields_values)&!is.list(prompt_fields_values)|any(unlist(lapply(prompt_fields_values, function(x) !is.na(x)&!is.character(x))))) stop("The prompt_fields_values argument must be NULL or a list of character vectors.")
     if(!is.null(prompt_fields_format)&
        !all(is.null(names(prompt_fields_format)))&
-       any(!names(prompt_fields_format)%in%prompt_fields)) stop("Names of prompt_fields_format must be in prompt_fields.")
+       any(!names(prompt_fields_format)%in%prompt_fields)) warning("Some names of prompt_fields_format are not in prompt_fields and will be ignored.")
     if(!is.null(prompt_fields_values)&
        !all(is.null(names(prompt_fields_values)))&
-       any(!names(prompt_fields_values)%in%prompt_fields)) stop("Names of prompt_fields_values must be in prompt_fields.")
+       any(!names(prompt_fields_values)%in%prompt_fields)) warning("Some names of prompt_fields_values are not in prompt_fields and will be ignored.")
     if(!is.null(prompt_fields_values)&
       (all(is.null(names(prompt_fields_values)))&
        length(prompt_fields_values)!=length(prompt_fields))) stop("If prompt_fields_values is unnamed, it must be the same length as prompt_fields.")
@@ -103,9 +103,11 @@ get_prompt <- function(bio, bio_name, prompt, prompt_fields, prompt_fields_forma
 
     # Turn values into a character vector of desired values
     prompt_fields_values <- lapply(prompt_fields,
-                                   function(x) ifelse(is.null(prompt_fields_values[[x]])|
-                                                        is.na(prompt_fields_values[[x]]), NA,
-                                                      sprintf("[%s]", paste(prompt_fields_values[[x]], collapse =",")))) |>
+                                   function(x) {
+                                     ifelse(is.null(prompt_fields_values[[x]])|
+                                        all(is.na(prompt_fields_values[[x]])), NA,
+                                        sprintf("[%s]", paste(prompt_fields_values[[x]], collapse =",")))
+                                   }) |>
       unlist()
 
   } else{
@@ -113,7 +115,7 @@ get_prompt <- function(bio, bio_name, prompt, prompt_fields, prompt_fields_forma
     # Turn values into a character vector
     prompt_fields_values <- lapply(prompt_fields_values,
                                    function(x) {
-                                     ifelse(is.null(x)|is.na(x),NA,
+                                     ifelse(is.null(x)|all(is.na(x)),NA,
                                             sprintf("[%s]", paste(x, collapse =",")))
                                      }) |> unlist()
 
@@ -123,7 +125,7 @@ get_prompt <- function(bio, bio_name, prompt, prompt_fields, prompt_fields_forma
     # Turn formats into character vector
     prompt_fields_format <- lapply(prompt_fields,
                                    function(x) ifelse(is.null(prompt_fields_format[[x]])|
-                                                        is.na(prompt_fields_format[[x]]), NA,
+                                                        all(is.na(prompt_fields_format[[x]])), NA,
                                                       prompt_fields_format[[x]])) |>
       unlist()
   }
