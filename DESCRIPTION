@@ -1,12 +1,21 @@
 Package: biographR
-Title: What the Package Does (One Line, Title Case)
+Title: Extract Biographical Data From Unstructured Text
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Samuel", "Frederick", , "sdf2128@columbia.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-5794-1459"))
+Description: This package uses ChatGPT to process unstructured biographical 
+    information. This info is then returned in a structured format with the 
+    desired fields. 
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    httr2,
+    jsonlite,
+    tibble,
+    tidyr
