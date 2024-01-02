@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_bio.R
 \name{get_bio}
 \alias{get_bio}
-\title{Get structured biographical information}
+\title{Get structured biographical data from unstructured text}
 \usage{
 get_bio(
   bio,
@@ -39,10 +39,10 @@ get_bio(
 \item{post_process_fields}{TRUE or FALSE, defaults FALSE. Should get_bio() use ChatGPT to map outputted values for each field to specified values?}
 }
 \value{
-A tibble containing desired biographical information
+A tibble containing desired biographical information or unprocessed API output from custom prompt
 }
 \description{
-Get structured biographical information
+Get structured biographical data from unstructured text
 }
 \examples{
 get_bio(bio = "MCCARTHY, KEVIN, a Representative from California;

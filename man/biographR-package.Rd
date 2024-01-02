@@ -4,9 +4,16 @@
 \name{biographR-package}
 \alias{biographR}
 \alias{biographR-package}
-\title{biographR: Extract Biographical Information From Unstructured Text}
+\title{biographR: Extract Biographical Data From Unstructured Text}
 \description{
-This package uses ChatGPT to process unstructured biographical information. This info is then returned in a structured format with the desired fields.
+This package uses ChatGPT to process unstructured biographical information and return data in a structured format with the desired fields.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://samuelfrederick.github.io/biographR/}
+}
+
 }
 \author{
 \strong{Maintainer}: Samuel Frederick \email{sdf2128@columbia.edu} (\href{https://orcid.org/0000-0001-5794-1459}{ORCID})

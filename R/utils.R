@@ -148,3 +148,4 @@ get_prompt <- function(bio, bio_name, prompt, prompt_fields, prompt_fields_forma
                     name_info, paste(fields$field, collapse = ", "), bio)
   return(final_prompt)
 }
+

@@ -1,11 +1,11 @@
 Package: biographR
 Title: Extract Biographical Data From Unstructured Text
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person("Samuel", "Frederick", , "sdf2128@columbia.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5794-1459"))
 Description: This package uses ChatGPT to process unstructured biographical 
-    information. This info is then returned in a structured format with the 
+    information and return data in a structured format with the 
     desired fields. 
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -14,11 +14,14 @@ RoxygenNote: 7.2.3
 Suggests: 
     knitr,
     rmarkdown,
+    rvest,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
+    dplyr,
     httr2,
     jsonlite,
+    rlang,
     tibble,
     tidyr
 VignetteBuilder: knitr

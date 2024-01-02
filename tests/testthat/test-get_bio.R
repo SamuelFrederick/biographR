@@ -66,8 +66,9 @@ test_that("Make sure get_bio() returns proper output", {
           openai_model = "gpt-4")
   bio_res |>
     expect_no_warning() |>
-    expect_no_error() |>
-    expect_s3_class(c("tbl_df", "tbl", "data.frame"))|>
+    expect_no_error()|>
+    expect_s3_class(c("tbl_df", "tbl", "data.frame"))
+  bio_res |>
     expect_type("list")
   expect_equal(bio_res,
                tibble::tibble(college = "Nowhere College - B.A.", graduate_school = "Nonexistent University - Ph.D.",

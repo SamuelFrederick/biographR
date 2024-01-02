@@ -1,5 +1,5 @@
 ---
-title: "get_bio"
+title: "Getting biographical data"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{get_bio}
@@ -17,3 +17,47 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(biographR)
 ```
+
+## Unstructured Biographical Text
+
+We often work with unstructured text but want to extract some specific structured data from this text. We could read through each text and extract the desired information manually; however, this is time-consuming and could be infeasible with larger numbers of texts. The function [get_bio()] allows us to extract desired data from unstructured texts using the ChatGPT API. 
+
+If you don't have an API Key for ChatGPT, you should create one through OpenAI before attempting to use this package. For simplicity, you can save this API key to your .Renviron (Note: the function [usethis::edit_r_environ()] may prove helpful here). 
+
+As an example, we can scrape the biography of actor Adam Driver from Wikipedia using the `rvest` package. 
+
+```{r}
+if(rlang::is_installed("rvest")) {
+  driver_bio <- rvest::read_html("https://en.wikipedia.org/wiki/Adam_Driver")|> 
+    rvest::html_elements(xpath = "//h2/span[@id='Early_life']/parent::*/following-sibling::*")
+  driver_bio <- paste(rvest::html_text2(driver_bio[2:5]), collapse = " ")
+  driver_bio
+} else{
+  driver_bio <- "Driver was born on November 19, 1983,[5] in San Diego, California,[6] the son of Nancy Wright (née Needham), a paralegal, and Joe Douglas Driver.[7][8] Director Terry Gilliam has claimed that Driver has Native American ancestry,[9] though Driver has no known Native American ancestors. His father's family is from Arkansas, and his mother's family is from Indiana. His stepfather, Rodney G. Wright, is a minister at a Baptist church.[10][11] When Driver was seven years old, he moved with his older sister and mother to his mother's hometown Mishawaka, Indiana, where he graduated from Mishawaka High School in 2001.[12][13] Driver was raised Baptist, and sang in the choir at church.[14] Driver has described his teenage self as a \"misfit\"; he told M Magazine that he climbed radio towers, set objects on fire, and co-founded a fight club with friends, inspired by the 1999 film Fight Club.[15] After high school, he worked as a door-to-door salesman selling Kirby vacuum cleaners and as a telemarketer for a basement waterproofing company and Ben Franklin Construction.[16] He applied to the Juilliard School for drama but was not accepted.[17] Shortly after the September 11 attacks, Driver enlisted in the United States Marine Corps.[5] He was assigned to Weapons Company, 1st Battalion, 1st Marines as an 81mm mortar man.[18] He served for two years and eight months before fracturing his sternum while mountain biking.[19] He was medically discharged with the rank of Lance Corporal. Subsequently, Driver attended the University of Indianapolis for a year before auditioning again for Juilliard, this time succeeding. He got the news he was accepted while at work at the Target Distribution Center in Indianapolis. Driver has said that his classmates saw him as an intimidating and volatile figure, and he struggled to fit into a lifestyle so different from the Marines.[15] He was a member of the Drama Division's Group 38 from 2005 to 2009, where he met his future wife, Joanne Tucker. He graduated with a Bachelor of Fine Arts in 2009.[20]"
+}
+```
+
+## Using `get_bio()` to extract data
+
+Now that we have a real example of an unstructured biography, we can decide what information we want to extract from the text. In practice, it's helpful to read through a sample of unstructured texts to find out what type of information tends to be included in the texts and to create a gold standard set of information to check against the ChatGPT output.
+
+The Adam Driver biography from Wikipedia contains a variety of information that might be interesting for potential study (his date of birth, place of birth, college, military experience, marriage, etc.). We use the [get_bio()] function to call ChatGPT's API to extract this information. 
+
+We put the desired information fields in the `prompt_fields` argument as a character vector. The names of the prompt_fields should be informative (people reading the fields should be able to understand what specific information you want the field to contain). If you don't pass any information to the `prompt_fields` argument, the function returns the default biographical fields: birth_date, highest_level_of_education, college, graduate_school, previous_occupation, gender, town_of_birth, state_of_birth, married, number_of_children.
+
+For certain fields, you might want information returned in a specific format (e.g., dates in MM/DD/YYYY format); you can pass this information through the `prompt_fields_format` argument as a named list with names corresponding to values in prompt_fields. 
+
+Finally, we might want to restrict certain fields to only take certain values: the `prompt_fields_values` argument allows us to pass this information as a named list of vectors with acceptable values for each field in each vector. 
+
+```{r}
+get_bio(bio = driver_bio,
+        bio_name = "Adam Driver",
+        prompt_fields = c("birth_date", "town_of_birth", "state_of_birth",
+                          "college", "religion", "military_experience",
+                          "married"),
+        prompt_fields_format = list(birth_date = "{MM}/{DD}/{YYYY}",
+                                    college = "{SCHOOL} - {YEAR} - {DEGREE}"),
+        prompt_fields_values = list(military_experience = c("Yes", "No"),
+                                    married = c("Yes", "No")))
+```
+
