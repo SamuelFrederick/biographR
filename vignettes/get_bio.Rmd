@@ -1,5 +1,5 @@
 ---
-title: "Getting biographical data"
+title: "get_bio"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{get_bio}
