@@ -38,7 +38,7 @@ He then went on to receive a Ph.D. from Nonexistent University.
 At the same time, his wife, Sally Smith, was earning her M.D. from Invisible University.
 ```
 
-It would be challenging, if not impossible, to extract structured biographical data about John Smith from this text without reading the text and getting the information by hand. Instead, we can use the `get_bio()` function from the `biographR` package, which calls ChatGPT's API to extract the data for us. 
+It would be challenging to extract structured biographical data about John Smith from this text without reading the text and getting the information by hand. Instead, we can use the `get_bio()` function from the `biographR` package, which calls ChatGPT's API to extract the data for us. 
 
 
 ```{r example}
