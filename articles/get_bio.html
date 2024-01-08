@@ -41,6 +41,8 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/Cleaning-Columns.html">Cleaning Columns</a>
+    <a class="dropdown-item" href="../articles/Improving-model-output.html">Improving model output</a>
     <a class="dropdown-item" href="../articles/get_bio.html">get_bio</a>
   </div>
 </li>
@@ -75,19 +77,19 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://samuelfrederick.github.io/biographR/">biographR</a></span><span class="op">)</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="unstructured-biographical-text">Unstructured Biographical Text<a class="anchor" aria-label="anchor" href="#unstructured-biographical-text"></a>
-</h2>
+<div class="section level3">
+<h3 id="unstructured-biographical-text">Unstructured Biographical Text<a class="anchor" aria-label="anchor" href="#unstructured-biographical-text"></a>
+</h3>
 <p>We often work with unstructured text but want to extract some
 specific structured data from this text. We could read through each text
 and extract the desired information manually; however, this is
 time-consuming and could be infeasible with larger numbers of texts. The
-function [get_bio()] allows us to extract desired data from unstructured
-texts using the ChatGPT API.</p>
+function <code><a href="../reference/get_bio.html">get_bio()</a></code> allows us to extract desired data from
+unstructured texts using the ChatGPT API.</p>
 <p>If you don’t have an API Key for ChatGPT, you should create one
 through OpenAI before attempting to use this package. For simplicity,
 you can save this API key to your .Renviron (Note: the function
-[usethis::edit_r_environ()] may prove helpful here).</p>
+<code>usethis::edit_r_environ()</code> may be helpful here).</p>
 <p>As an example, we can scrape the biography of actor Adam Driver from
 Wikipedia using the <code>rvest</code> package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -113,40 +115,196 @@ output.</p>
 <p>The Adam Driver biography from Wikipedia contains a variety of
 information that might be interesting for potential study (his date of
 birth, place of birth, college, military experience, marriage, etc.). We
-use the [get_bio()] function to call ChatGPT’s API to extract this
-information.</p>
-<p>We put the desired information fields in the
+use the <code><a href="../reference/get_bio.html">get_bio()</a></code> function to call ChatGPT’s API to extract
+this information.</p>
+<p>The <code><a href="../reference/get_bio.html">get_bio()</a></code> function has five key arguments:
+<code>bio</code>, <code>bio_name</code>, <code>prompt_fields</code>,
+<code>prompt_formats</code>, and <code>prompt_values</code>.
+<code>bio</code> must contain the biographical text from which you want
+to extract data. <code>bio_name</code> is optional but recommended and
+is used to specify which individual ChatGPT should get information
+for.</p>
+<p>We put the desired biographical information fields in the
 <code>prompt_fields</code> argument as a character vector. The names of
 the prompt_fields should be informative (people reading the fields
 should be able to understand what specific information you want the
-field to contain). If you don’t pass any information to the
-<code>prompt_fields</code> argument, the function returns the default
-biographical fields: birth_date, highest_level_of_education, college,
-graduate_school, previous_occupation, gender, town_of_birth,
-state_of_birth, married, number_of_children.</p>
+field to contain). For example, the names might be something like
+<code>c(birthdate, town_of_birth)</code>. If you don’t pass any
+information to the <code>prompt_fields</code> argument, the function
+returns the default biographical fields: birth_date,
+highest_level_of_education, college, graduate_school,
+previous_occupation, gender, town_of_birth, state_of_birth, and
+married.</p>
 <p>For certain fields, you might want information returned in a specific
 format (e.g., dates in MM/DD/YYYY format); you can pass this information
-through the <code>prompt_fields_format</code> argument as a named list
-with names corresponding to values in prompt_fields.</p>
+through the <code>prompt_fields_formats</code> argument as a named list
+with names corresponding to values in prompt_fields. For example, we
+could pass
+<code>prompt_fields_arguments=list(birthdate="MM/DD/YYYY")</code> to
+instruct ChatGPT about proper birthdate formatting.</p>
 <p>Finally, we might want to restrict certain fields to only take
 certain values: the <code>prompt_fields_values</code> argument allows us
 to pass this information as a named list of vectors with acceptable
-values for each field in each vector.</p>
+values for each field in each vector. As an example, we could pass
+<code>prompt_fields_values=list(education=c("High School or less", "College", "Graduate School"))</code>
+to tell ChatGPT that we only want education information to be one of
+these three values.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_bio.html">get_bio</a></span><span class="op">(</span>bio <span class="op">=</span> <span class="va">driver_bio</span>,</span>
 <span>        bio_name <span class="op">=</span> <span class="st">"Adam Driver"</span>,</span>
 <span>        prompt_fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"birth_date"</span>, <span class="st">"town_of_birth"</span>, <span class="st">"state_of_birth"</span>,</span>
 <span>                          <span class="st">"college"</span>, <span class="st">"religion"</span>, <span class="st">"military_experience"</span>,</span>
 <span>                          <span class="st">"married"</span><span class="op">)</span>,</span>
-<span>        prompt_fields_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>birth_date <span class="op">=</span> <span class="st">"{MM}/{DD}/{YYYY}"</span>,</span>
-<span>                                    college <span class="op">=</span> <span class="st">"{SCHOOL} - {YEAR} - {DEGREE}"</span><span class="op">)</span>,</span>
+<span>        prompt_fields_formats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>birth_date <span class="op">=</span> <span class="st">"{MM}/{DD}/{YYYY}"</span>,</span>
+<span>                                    college <span class="op">=</span> <span class="st">"{SCHOOL} - {DEGREE}"</span><span class="op">)</span>,</span>
 <span>        prompt_fields_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>military_experience <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
 <span>                                    married <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Input Tokens: 607</span></span>
+<span><span class="co">#&gt; Output Tokens: 82</span></span>
+<span><span class="co">#&gt; Total Tokens: 689</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
 <span><span class="co">#&gt;   birth_date town_of_birth state_of_birth college   religion military_experience</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 11/19/1983 San Diego     California     Universi… Baptist  Yes                </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: married &lt;chr&gt;</span></span></span></code></pre></div>
+<div class="section level3">
+<h3 id="custom-prompts-with-get_bio">Custom Prompts with <code>get_bio()</code><a class="anchor" aria-label="anchor" href="#custom-prompts-with-get_bio"></a>
+</h3>
+<p>If you would like, you can input a custom prompt for
+<code><a href="../reference/get_bio.html">get_bio()</a></code> using the <code>prompt</code> argument, which
+will override the defaults. If you input a custom prompt, you should
+include all applicable information from the <code>prompt_fields</code>,
+<code>prompt_fields_formats</code>, and
+<code>prompt_fields_values</code> arguments in your custom prompt.</p>
+</div>
+<div class="section level3">
+<h3 id="few-shot-prompting-with-get_bio">Few-Shot Prompting with <code>get_bio()</code><a class="anchor" aria-label="anchor" href="#few-shot-prompting-with-get_bio"></a>
+</h3>
+<p>We can also use few-shot prompting in <code><a href="../reference/get_bio.html">get_bio()</a></code> with the
+<code>prompt_fewshot</code> argument. The <code>prompt_fewshot</code>
+argument should be a data.frame or tibble which contains example bios in
+a column called “bio”, example names in a column called “bio_name” (if
+desired), and example outputs for <code>prompt_fields</code> in the
+applicable columns.</p>
+<p>For the <code><a href="../reference/get_bio.html">get_bio()</a></code> example above, few-shot prompting
+might look something like this:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fewshot_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>bio <span class="op">=</span> <span class="st">"John Smith was born on the thirteenth of October in 1992 in St. Louis, MO. He went on to earn his Bachelor of Arts degree from Invisible University where he met his wife, Marie. Raised as a Quaker, he was opposed to entering the military."</span>, </span>
+<span>                              bio_name <span class="op">=</span> <span class="st">"John Smith"</span>, </span>
+<span>                              birth_date <span class="op">=</span> <span class="st">"10/13/1992"</span>, </span>
+<span>                              town_of_birth <span class="op">=</span> <span class="st">"St. Louis"</span>, </span>
+<span>                              state_of_birth <span class="op">=</span> <span class="st">"Missouri"</span>, </span>
+<span>                              college <span class="op">=</span> <span class="st">"Invisible University - B.A."</span>, </span>
+<span>                              religion <span class="op">=</span> <span class="st">"Quaker"</span>, </span>
+<span>                              military_experience <span class="op">=</span> <span class="st">"No"</span>, </span>
+<span>                              married <span class="op">=</span> <span class="st">"Yes"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/get_bio.html">get_bio</a></span><span class="op">(</span>bio <span class="op">=</span> <span class="va">driver_bio</span>,</span>
+<span>        bio_name <span class="op">=</span> <span class="st">"Adam Driver"</span>,</span>
+<span>        prompt_fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"birth_date"</span>, <span class="st">"town_of_birth"</span>, <span class="st">"state_of_birth"</span>,</span>
+<span>                          <span class="st">"college"</span>, <span class="st">"religion"</span>, <span class="st">"military_experience"</span>,</span>
+<span>                          <span class="st">"married"</span><span class="op">)</span>,</span>
+<span>        prompt_fields_formats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>birth_date <span class="op">=</span> <span class="st">"{MM}/{DD}/{YYYY}"</span>,</span>
+<span>                                    college <span class="op">=</span> <span class="st">"{SCHOOL} - {DEGREE}"</span><span class="op">)</span>,</span>
+<span>        prompt_fields_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>military_experience <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
+<span>                                    married <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>        prompt_fewshot <span class="op">=</span> <span class="va">fewshot_example</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Input Tokens: 835</span></span>
+<span><span class="co">#&gt; Output Tokens: 61</span></span>
+<span><span class="co">#&gt; Total Tokens: 896</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
+<span><span class="co">#&gt;   birth_date town_of_birth state_of_birth college   religion military_experience</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 11/19/1983 San Diego     California     Universi… Baptist  Yes                </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: married &lt;chr&gt;</span></span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="using-get_bio_function_call-to-extract-data">Using <code>get_bio_function_call()</code> to extract data<a class="anchor" aria-label="anchor" href="#using-get_bio_function_call-to-extract-data"></a>
+</h2>
+<p>ChatGPT also supports a different type of prompting known as function
+calling. This type of prompting can be helpful for extracting structured
+information from user input. The function
+<code><a href="../reference/get_bio.html">get_bio_function_call()</a></code> allows us to use a function call to
+extract biographical data.</p>
+<p>Function calling essentially tells ChatGPT we have a function that
+takes specific arguments, and we want to extract those arguments from
+the input. Function call prompts take three types of information about
+each function argument you want to extract: the type of object you want
+in the argument (kept as a string in biographR for simplicity), the
+possible values of the argument (passed through
+<code>prompt_fields_values</code> argument to
+<code><a href="../reference/get_bio.html">get_bio_function_call()</a></code>), and a description of the argument
+(this combines elements from <code>prompt_fields_descriptions</code> and
+<code>prompt_fields_formats</code>).</p>
+<p>The GPT 4 models appear to be somewhat better at returning function
+call information correctly (according to <a href="https://openai.com/blog/function-calling-and-other-api-updates" class="external-link">OpenAI</a>).</p>
+<p>Turning back to the Adam Driver biography from above, we can use
+ChatGPT function calling to extract biographical information from the
+text.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_bio.html">get_bio_function_call</a></span><span class="op">(</span>bio <span class="op">=</span> <span class="va">driver_bio</span>, </span>
+<span>                      bio_name <span class="op">=</span> <span class="st">"Adam Driver"</span>, </span>
+<span>                      prompt_fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"birth_date"</span>, <span class="st">"town_of_birth"</span>,</span>
+<span>                                        <span class="st">"state_of_birth"</span>, <span class="st">"college"</span>,</span>
+<span>                                        <span class="st">"religion"</span>, <span class="st">"military_experience"</span>,</span>
+<span>                                        <span class="st">"married"</span><span class="op">)</span>,</span>
+<span>                      prompt_fields_formats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>birth_date <span class="op">=</span> <span class="st">"{MM}/{DD}/{YYYY}"</span>,</span>
+<span>                                                  college <span class="op">=</span> <span class="st">"{SCHOOL} - {DEGREE}"</span><span class="op">)</span>,</span>
+<span>                      prompt_fields_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>military_experience <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
+<span>                                                  married <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>                      prompt_fields_descriptions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>college <span class="op">=</span> <span class="st">"Information about the individual's college degree."</span>, </span>
+<span>                                                        religion <span class="op">=</span> <span class="st">"Information about any religious history the individual has."</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Input Tokens: 758</span></span>
+<span><span class="co">#&gt; Output Tokens: 92</span></span>
+<span><span class="co">#&gt; Total Tokens: 850</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
+<span><span class="co">#&gt;   birth_date town_of_birth state_of_birth college   religion military_experience</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 11/19/1983 San Diego     California     Universi… Baptist  Yes                </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: married &lt;chr&gt;</span></span></span></code></pre></div>
+<div class="section level3">
+<h3 id="few-shot-prompting-with-get_bio_function_call">Few-Shot Prompting with <code>get_bio_function_call()</code><a class="anchor" aria-label="anchor" href="#few-shot-prompting-with-get_bio_function_call"></a>
+</h3>
+<p>The syntax for few-shot prompting with
+<code><a href="../reference/get_bio.html">get_bio_function_call()</a></code> is the same as the syntax for
+<code><a href="../reference/get_bio.html">get_bio()</a></code>. We should input the few-shot examples as a
+data.frame or tibble with example biographical text in a column called
+“bio”, example biographical names in a column called “bio_name” (if
+desired), and example biographical data in columns with names from
+prompt_fields.</p>
+<p>Looking at the example from the <a href="#few-shot-prompting-with-get_bio">Few-Shot Prompting with
+<code>get_bio()</code></a> section:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fewshot_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>bio <span class="op">=</span> <span class="st">"John Smith was born on the thirteenth of October in 1992 in St. Louis, MO. He went on to earn his Bachelor of Arts degree from Invisible University where he met his wife, Marie. Raised as a Quaker, he was opposed to entering the military."</span>, </span>
+<span>                              bio_name <span class="op">=</span> <span class="st">"John Smith"</span>, </span>
+<span>                              birth_date <span class="op">=</span> <span class="st">"10/13/1992"</span>, </span>
+<span>                              town_of_birth <span class="op">=</span> <span class="st">"St. Louis"</span>, </span>
+<span>                              state_of_birth <span class="op">=</span> <span class="st">"Missouri"</span>, </span>
+<span>                              college <span class="op">=</span> <span class="st">"Invisible University - B.A."</span>, </span>
+<span>                              religion <span class="op">=</span> <span class="st">"Quaker"</span>, </span>
+<span>                              military_experience <span class="op">=</span> <span class="st">"No"</span>, </span>
+<span>                              married <span class="op">=</span> <span class="st">"Yes"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/get_bio.html">get_bio_function_call</a></span><span class="op">(</span>bio <span class="op">=</span> <span class="va">driver_bio</span>,</span>
+<span>        bio_name <span class="op">=</span> <span class="st">"Adam Driver"</span>,</span>
+<span>        prompt_fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"birth_date"</span>, <span class="st">"town_of_birth"</span>, <span class="st">"state_of_birth"</span>,</span>
+<span>                          <span class="st">"college"</span>, <span class="st">"religion"</span>, <span class="st">"military_experience"</span>,</span>
+<span>                          <span class="st">"married"</span><span class="op">)</span>,</span>
+<span>        prompt_fields_formats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>birth_date <span class="op">=</span> <span class="st">"{MM}/{DD}/{YYYY}"</span>,</span>
+<span>                                    college <span class="op">=</span> <span class="st">"{SCHOOL} - {DEGREE}"</span><span class="op">)</span>,</span>
+<span>        prompt_fields_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>military_experience <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
+<span>                                    married <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>        prompt_fewshot <span class="op">=</span> <span class="va">fewshot_example</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Input Tokens: 951</span></span>
+<span><span class="co">#&gt; Output Tokens: 71</span></span>
+<span><span class="co">#&gt; Total Tokens: 1022</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
+<span><span class="co">#&gt;   birth_date town_of_birth state_of_birth college   religion military_experience</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 11/19/1983 San Diego     California     Universi… Baptist  Yes                </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: married &lt;chr&gt;</span></span></span></code></pre></div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
