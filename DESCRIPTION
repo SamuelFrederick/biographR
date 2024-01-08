@@ -22,7 +22,9 @@ Imports:
     httr2,
     jsonlite,
     rlang,
+    stats,
     tibble,
-    tidyr
+    tidyr,
+    utils
 VignetteBuilder: knitr
 URL: https://samuelfrederick.github.io/biographR/

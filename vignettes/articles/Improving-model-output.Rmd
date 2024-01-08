@@ -1,0 +1,94 @@
+---
+title: "Improving model output"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(biographR)
+```
+
+ChatGPT is **not perfect** at extracting information and can often make mistakes, but there are several routes to improve the output and to check the output. 
+
+1. [Hand-Coding Data]
+2. [Changing Model Version]
+3. [Few-Shot Prompting]
+4. [Custom Prompts]
+5. [Post-Processing Output]
+6. [Combination of Approaches]
+
+# Hand-Coding Data
+
+It is generally good practice to hand-code a random sample of your data. This can help in several ways. First, it gives you an idea of what type of information you can extract from your data. With this information in hand, you can decide what to input to functions like `get_bio()`. Second, hand-coding will give you a dataset with which you can evaluate the performance of output from ChatGPT. Third, you can use these data as inputs for [few-shot prompting](#few-shot) which can help improve output from ChatGPT.
+
+# Changing Model Version
+
+`biographR` defaults to `gpt-3.5-turbo` because it is less expensive than `gpt-4` and generally performs quite well. However, other models like `gpt-4` and `gpt-4-1106-preview` can give better performance. In particular, GPT-4 models perform better on function calling, according to [OpenAI](https://openai.com/blog/function-calling-and-other-api-updates) and, anecdotally, appear to do a better job extracting subtler information like gender from pronouns. You can change which model you're using in `biographR` through the `openai_model` argument.
+
+# Few-Shot Prompting {#few-shot}
+
+ChatGPT output can also be improved by providing ChatGPT with exemplars of the task you want it to complete -- what is known as ["few-shot" prompting](https://proceedings.neurips.cc/paper_files/paper/2020/file/1457c0d6bfcb4967418bfb8ac142f64a-Paper.pdf). This is another way that hand-coded biographical texts can come in handy: they give you some examples with which to improve ChatGPT responses. 
+
+Few-shot prompting is supported in `biographR` using the `prompt_fewshot` argument in `get_bio()` and `get_bio_function_call()`. The `prompt_fewshot` argument accepts a data.frame or tibble containing the example bio, the example bio_name (if applicable), and the results for every field in your prompt_fields argument. 
+
+For example, we might have three exemplars of the type of information we want. We would pass this information to the `prompt_fewshot` argument in this form:
+
+```{r}
+prompt_fewshot <- data.frame(
+  bio = c("John Smith went to Nowhere University where he earned his B.A.", 
+          "Sally Smith went to Hogwarts where she studied magic and earned her BS in potions.", 
+          "Adam Driver got his BFA from Juilliard."), 
+  bio_name = c("John Smith", "Sally Smith", "Adam Driver"), 
+  gender = c("Male", "Female", "Male"), 
+  undergraduate_education = c("Nowhere University - Bachelor's", 
+              "Hogwarts - Bachelor's",
+              "Juilliard - Bachelor's")
+)
+```
+
+We can then pass this information to one of our functions like this (from [Joe Biden's Wikipedia page](https://en.wikipedia.org/wiki/Joe_Biden)):
+
+```{r}
+get_bio(bio = "Joseph Robinette Biden Jr. is an American politician who is the 46th and current president of the United States. A member of the Democratic Party, he previously served as the 47th vice president from 2009 to 2017 under President Barack Obama and represented Delaware in the United States Senate from 1973 to 2009. Born in Scranton, Pennsylvania, Biden moved with his family to Delaware in 1953. He graduated from the University of Delaware before earning his law degree from Syracuse University.", 
+        bio_name = "Joe Biden", 
+        prompt_fields = c("undergraduate_education", "gender"), 
+        prompt_fields_formats = list(undergraduate_education = "{UNDERGRADUATE SCHOOL} - {DEGREE}"), 
+        prompt_fewshot = prompt_fewshot)
+```
+
+# Custom Prompts
+
+It can be hard to design a perfect prompt, and different tasks might require different approaches. The `get_bio()` function supports adding unique prompts which override the default through the `prompt` argument. When a custom prompt is supplied, the output of the function will be unprocessed (i.e., `get_bio()` won't output a tibble), so that you can specify whichever form of output you prefer.
+
+```{r}
+get_bio(bio = "Joseph Robinette Biden Jr. is an American politician who is the 46th and current president of the United States. A member of the Democratic Party, he previously served as the 47th vice president from 2009 to 2017 under President Barack Obama and represented Delaware in the United States Senate from 1973 to 2009. Born in Scranton, Pennsylvania, Biden moved with his family to Delaware in 1953. He graduated from the University of Delaware before earning his law degree from Syracuse University.", 
+        bio_name = "Joe Biden", 
+        prompt = "Return ONLY a CSV format containing the gender and highest level of education for Joe Biden with columns 'gender' and 'highest_level_of_education'"
+        )
+```
+
+# Post-Processing Output
+
+A fifth approach we can take to improve our output involves post-processing our results. For example, if we gather data from a bunch of biographies, we may end up with data that are not in a common format (e.g., calling a Bachelor's degree a B.A., B.S., B.F.A., Bachelor's, etc.). You can, of course, post-process these data using regex or even by hand, but we can also use ChatGPT to post-process these data. The `clean_columns()` function implements post-processing of data. 
+
+```{r}
+example_data <- data.frame(highest_level_of_education = c("B.A.", "BA", "BFA", "Ph.D.", "Master's"), 
+                           state_of_birth = c("CA", "Calif.", "California", "NY", "New York"))
+clean_columns(data = example_data, 
+              column_values = list(highest_level_of_education = c("High School or less", "College", "Graduate School"), 
+                                   state_of_birth = c("CA", "NY")))
+```
+
+# Combination of Approaches
+
+Finally, we can combine these approaches to produce better output: we can use more advanced GPT models with few-shot-prompting, custom prompts, and post-processing of data. And users should always check the output of these models: hand-coding data can allow you to assess the accuracy of ChatGPT output. 

@@ -1,0 +1,126 @@
+---
+title: "Cleaning Columns"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(biographR)
+```
+
+The data that we work with are often in unusable formats. For example, we might have data about individuals' education, but the education could contain values like "BA", "AB", "B.A.", "Bachelor's", "College", etc. Similarly, we often want to merge datasets but don't have unique identifiers in common form. We might have names in one dataset with the form "LASTNAME, FirstName MiddleName, Suffix" and in another dataset with the form "FirstName LASTNAME".
+
+We could use regex to process the data into our desired output; however, regex can sometimes miss or misclassify entries. Moreover, it can be challenging to write regex to capture all cases. Note: I would generally recommend trying to process your columns first using regex before trying ChatGPT. Additionally, pre-processing your columns using regex before using ChatGPT can help cut down on the number of tokens you are sending in the API calls (and therefore, cut down on costs).
+
+The `biographR` package has two functions to help clean and reformat columns using ChatGPT: `clean_columns()` and `clean_columns_function_call()`. As an example, we'll make a fake dataset containing some birthdates and educational values:
+
+```{r}
+df <- data.frame(education = c("BA", "B.A.", "GED", "Ph.D.", 
+                               "MD", "Master's", "High School Diploma"), 
+                 birthdate = c("Sept. 19th, 1974", "October 20, 1963", "3.12.1987", 
+                               "15 of April in 1990", "7/6/81", "3rd of August, 1953", 
+                               "2/14/1934"))
+```
+
+# Using `clean_columns()`
+
+We can start cleaning our data using the `clean_columns()` function. In addition to the usual API specifications (API key, model, temperature, and seed), `clean_columns()` takes three main arguments: `data`, `column_values`, and `column_formats`. The `data` argument contains the dataset we want to clean. 
+
+`column_values` and `column_formats` should be lists, named with the names of the columns you want to process and containing the desired output values and formats. For example, for our education column above we might use the `column_values` argument to pass the list `list(education = c("High School or less", "College", "Graduate School"))`. `clean_columns()` will then use ChatGPT to attempt to match your educational data to these values. 
+
+For `column_formats`, for our birthdate column, we might pass `list(birthdate = "MM/DD/YYYY")` to the `column_formats` argument.
+
+The `clean_columns()` function makes separate API calls for each column to be cleaned, and it outputs the original dataset with the cleaned columns denoted by a "_gpt" suffix.
+
+```{r}
+clean_columns(data = df,
+              column_values = list(education = c("High School or less", "College", "Graduate School")),
+              column_formats = list(birthdate = "MM/DD/YYYY"))
+```
+
+## Few-Shot Prompting with `clean_columns()`
+
+There are three key arguments for few-shot prompting with `clean_columns()`: `prompt_fewshot_type`, `prompt_fewshot_n`, and `prompt_fewshot`.
+
+First, `prompt_fewshot_type` should be either "specific" or "general". The value "specific" indicates that the provided examples are specific to the columns you want to clean. For example, if we provide examples for education and birthdate, `clean_columns()` will *only* use the education examples for few-shot prompting the education cleaning and will *only* use the birthdate examples for few-shot prompting the birthdate cleaning. 
+
+The value "general" indicates that the provided examples are not specific to the columns you want to clean. All examples will be used for few-shot prompting every column API call. For example, both education and birthdate examples will be used in few-shot prompting education cleaning. 
+
+I would generally recommend using `prompt_fewshot_type="specific"` (and this is the default value), unless you have a compelling reason not to do so.
+
+Second, `prompt_fewshot_n` tells `clean_columns()` whether you want to split your few-shot examples into multiple example prompts and outputs. For example, if you provide 10 examples for education, setting `prompt_fewshot_n=2` would split those 10 examples into two separate example prompts and outputs for ChatGPT. You can give different values for different columns by passing a named list to `prompt_fewshot_n` (e.g., `list(education = 2, birthdate = 4)`).
+
+Third, `prompt_fewshot` contains your examples for column cleaning. For `clean_columns()`, this can be a list, a tibble, or a data.frame. It should contain example input and example output (with the same name as input but with suffix "_gpt"). If `prompt_fewshot_type` is "general", you might also want to input values and formats for the examples; these should be separate columns or list entries with the suffixes "_values" and "_formats", respectively. 
+
+### Specific Few-Shot Example
+
+```{r}
+clean_columns(data = df,
+              column_values = list(education = c("High School or less", "College", "Graduate School")),
+              prompt_fewshot_type = "specific",
+              prompt_fewshot_n = 1,
+              prompt_fewshot = data.frame(education = c("GED", "BA", "MPhil", "BS", "Bachelor's", "10th grade"),
+                                          education_gpt = c("High School or less", "College", "Graduate School", "College", "College", "High School or less")))
+```
+
+### General Few-Shot Example
+
+```{r}
+clean_columns(data = df,
+              column_values = list(education = c("High School or less", "College", "Graduate School")),
+              prompt_fewshot_type = "general",
+              prompt_fewshot_n = 1,
+              prompt_fewshot = list(education = c("GED", "BA", "MPhil"),
+                                    education_gpt = c("High School or less", "College", "Graduate School"),
+                                    education_values = c("High School or less", "College", "Graduate School"),
+                                    birthdate = c("August 9, 1978", "Oct 10, 1935", "11th of January 1957"),
+                                    birthdate_gpt = c("08/09/1978", "10/10/1935", "01/11/1957"),
+                                    birthdate_format = "MM/DD/YYYY"))
+```
+
+# Using `clean_columns_function_call()`
+
+We can also use ChatGPT's function calling feature which provides ChatGPT with an overview of a "function." ChatGPT then extracts the data corresponding to the arguments of the function and returns these arguments, so that the user can enter the arguments into the function. This is implemented for column cleaning using the `clean_columns_function_call()` function. 
+
+`clean_columns_function_call()` is broadly similar to `clean_columns()` with four main differences: 
+
+1. It adds the optional `column_descriptions` argument which, like `column_values` and `column_formats`, is a named list of characters with names from the columns of `data`. The values are the descriptions of the arguments of the function call, if desired. For example, you may wish to describe what exactly should be in the cleaned column apart from the values and formats. 
+2. It does not take a `prompt_fewshot_type` argument. 
+3. `prompt_fewshot_n` must be an integer.
+4. It adds the optional `openai_context_window` argument. Because `clean_columns_function_call()` tries to clean all of the columns in one API call, some column combinations might be larger than what can be processed by ChatGPT. In this case, `clean_columns_function_call()` tries to break the columns up into separate API calls which are smaller than the context window.
+
+Now, we can try using `clean_columns_function_call()` with our data:
+
+```{r}
+clean_columns_function_call(data = df,
+              column_values = list(education = c("High School or less", "College", "Graduate School")),
+              column_formats = list(birthdate = "MM/DD/YYYY"))
+```
+
+## Few-Shot Prompting with `clean_columns_function_call()`
+
+Like `clean_columns()`, `clean_columns_function_call()` also supports few-shot prompting, which may improve output. For more details on the specifics of few-shot prompting, see [Few-Shot Prompting with `clean_columns_function_call()].
+
+```{r}
+clean_columns_function_call(data = df,
+              column_values = list(education = c("High School or less", "College", "Graduate School")),
+              column_formats = list(birthdate = "MM/DD/YYYY"), 
+              prompt_fewshot = list(education = c("GED", "BA", "MPhil"), 
+                                    education_gpt = c("High School or less", "College", "Graduate School"),
+                                    birthdate = c("August 9, 1978", "Oct 10, 1935", "11th of January 1957"),
+                                    birthdate_gpt = c("08/09/1978", "10/10/1935", "01/11/1957")))
+```
+
+
+
+
+

@@ -20,9 +20,9 @@ library(biographR)
 
 ## Unstructured Biographical Text
 
-We often work with unstructured text but want to extract some specific structured data from this text. We could read through each text and extract the desired information manually; however, this is time-consuming and could be infeasible with larger numbers of texts. The function [get_bio()] allows us to extract desired data from unstructured texts using the ChatGPT API. 
+We often work with unstructured text but want to extract some specific structured data from this text. We could read through each text and extract the desired information manually; however, this is time-consuming and could be infeasible with larger numbers of texts. The function `get_bio()` allows us to extract desired data from unstructured texts using the ChatGPT API. 
 
-If you don't have an API Key for ChatGPT, you should create one through OpenAI before attempting to use this package. For simplicity, you can save this API key to your .Renviron (Note: the function [usethis::edit_r_environ()] may prove helpful here). 
+If you don't have an API Key for ChatGPT, you should create one through OpenAI before attempting to use this package. For simplicity, you can save this API key to your .Renviron (Note: the function `usethis::edit_r_environ()` may be helpful here). 
 
 As an example, we can scrape the biography of actor Adam Driver from Wikipedia using the `rvest` package. 
 
@@ -37,17 +37,19 @@ if(rlang::is_installed("rvest")) {
 }
 ```
 
-## Using `get_bio()` to extract data
+# Using `get_bio()` to extract data
 
 Now that we have a real example of an unstructured biography, we can decide what information we want to extract from the text. In practice, it's helpful to read through a sample of unstructured texts to find out what type of information tends to be included in the texts and to create a gold standard set of information to check against the ChatGPT output.
 
-The Adam Driver biography from Wikipedia contains a variety of information that might be interesting for potential study (his date of birth, place of birth, college, military experience, marriage, etc.). We use the [get_bio()] function to call ChatGPT's API to extract this information. 
+The Adam Driver biography from Wikipedia contains a variety of information that might be interesting for potential study (his date of birth, place of birth, college, military experience, marriage, etc.). We use the `get_bio()` function to call ChatGPT's API to extract this information. 
 
-We put the desired information fields in the `prompt_fields` argument as a character vector. The names of the prompt_fields should be informative (people reading the fields should be able to understand what specific information you want the field to contain). If you don't pass any information to the `prompt_fields` argument, the function returns the default biographical fields: birth_date, highest_level_of_education, college, graduate_school, previous_occupation, gender, town_of_birth, state_of_birth, married, number_of_children.
+The `get_bio()` function has five key arguments: `bio`, `bio_name`, `prompt_fields`, `prompt_formats`, and `prompt_values`. `bio` must contain the biographical text from which you want to extract data. `bio_name` is optional but recommended and is used to specify which individual ChatGPT should get information for. 
 
-For certain fields, you might want information returned in a specific format (e.g., dates in MM/DD/YYYY format); you can pass this information through the `prompt_fields_format` argument as a named list with names corresponding to values in prompt_fields. 
+We put the desired biographical information fields in the `prompt_fields` argument as a character vector. The names of the prompt_fields should be informative (people reading the fields should be able to understand what specific information you want the field to contain). For example, the names might be something like `c(birthdate, town_of_birth)`. If you don't pass any information to the `prompt_fields` argument, the function returns the default biographical fields: birth_date, highest_level_of_education, college, graduate_school, previous_occupation, gender, town_of_birth, state_of_birth, and married.
 
-Finally, we might want to restrict certain fields to only take certain values: the `prompt_fields_values` argument allows us to pass this information as a named list of vectors with acceptable values for each field in each vector. 
+For certain fields, you might want information returned in a specific format (e.g., dates in MM/DD/YYYY format); you can pass this information through the `prompt_fields_formats` argument as a named list with names corresponding to values in prompt_fields. For example, we could pass `prompt_fields_arguments=list(birthdate="MM/DD/YYYY")` to instruct ChatGPT about proper birthdate formatting. 
+
+Finally, we might want to restrict certain fields to only take certain values: the `prompt_fields_values` argument allows us to pass this information as a named list of vectors with acceptable values for each field in each vector. As an example, we could pass `prompt_fields_values=list(education=c("High School or less", "College", "Graduate School"))` to tell ChatGPT that we only want education information to be one of these three values. 
 
 ```{r}
 get_bio(bio = driver_bio,
@@ -55,9 +57,97 @@ get_bio(bio = driver_bio,
         prompt_fields = c("birth_date", "town_of_birth", "state_of_birth",
                           "college", "religion", "military_experience",
                           "married"),
-        prompt_fields_format = list(birth_date = "{MM}/{DD}/{YYYY}",
-                                    college = "{SCHOOL} - {YEAR} - {DEGREE}"),
+        prompt_fields_formats = list(birth_date = "{MM}/{DD}/{YYYY}",
+                                    college = "{SCHOOL} - {DEGREE}"),
         prompt_fields_values = list(military_experience = c("Yes", "No"),
                                     married = c("Yes", "No")))
 ```
+
+## Custom Prompts with `get_bio()`
+
+If you would like, you can input a custom prompt for `get_bio()` using the `prompt` argument, which will override the defaults. If you input a custom prompt, you should include all applicable information from the `prompt_fields`, `prompt_fields_formats`, and `prompt_fields_values` arguments in your custom prompt. 
+
+## Few-Shot Prompting with `get_bio()`
+
+We can also use few-shot prompting in `get_bio()` with the `prompt_fewshot` argument. The `prompt_fewshot` argument should be a data.frame or tibble which contains example bios in a column called "bio", example names in a column called "bio_name" (if desired), and example outputs for `prompt_fields` in the applicable columns. 
+
+For the `get_bio()` example above, few-shot prompting might look something like this:
+
+```{r}
+fewshot_example <- data.frame(bio = "John Smith was born on the thirteenth of October in 1992 in St. Louis, MO. He went on to earn his Bachelor of Arts degree from Invisible University where he met his wife, Marie. Raised as a Quaker, he was opposed to entering the military.", 
+                              bio_name = "John Smith", 
+                              birth_date = "10/13/1992", 
+                              town_of_birth = "St. Louis", 
+                              state_of_birth = "Missouri", 
+                              college = "Invisible University - B.A.", 
+                              religion = "Quaker", 
+                              military_experience = "No", 
+                              married = "Yes")
+
+get_bio(bio = driver_bio,
+        bio_name = "Adam Driver",
+        prompt_fields = c("birth_date", "town_of_birth", "state_of_birth",
+                          "college", "religion", "military_experience",
+                          "married"),
+        prompt_fields_formats = list(birth_date = "{MM}/{DD}/{YYYY}",
+                                    college = "{SCHOOL} - {DEGREE}"),
+        prompt_fields_values = list(military_experience = c("Yes", "No"),
+                                    married = c("Yes", "No")), 
+        prompt_fewshot = fewshot_example)
+```
+
+# Using `get_bio_function_call()` to extract data
+
+ChatGPT also supports a different type of prompting known as function calling. This type of prompting can be helpful for extracting structured information from user input. The function `get_bio_function_call()` allows us to use a function call to extract biographical data. 
+
+Function calling essentially tells ChatGPT we have a function that takes specific arguments, and we want to extract those arguments from the input. Function call prompts take three types of information about each function argument you want to extract: the type of object you want in the argument (kept as a string in biographR for simplicity), the possible values of the argument (passed through `prompt_fields_values` argument to `get_bio_function_call()`), and a description of the argument (this combines elements from `prompt_fields_descriptions` and `prompt_fields_formats`). 
+
+The GPT 4 models appear to be somewhat better at returning function call information correctly (according to [OpenAI](https://openai.com/blog/function-calling-and-other-api-updates)).
+
+Turning back to the Adam Driver biography from above, we can use ChatGPT function calling to extract biographical information from the text. 
+
+```{r}
+get_bio_function_call(bio = driver_bio, 
+                      bio_name = "Adam Driver", 
+                      prompt_fields = c("birth_date", "town_of_birth",
+                                        "state_of_birth", "college",
+                                        "religion", "military_experience",
+                                        "married"),
+                      prompt_fields_formats = list(birth_date = "{MM}/{DD}/{YYYY}",
+                                                  college = "{SCHOOL} - {DEGREE}"),
+                      prompt_fields_values = list(military_experience = c("Yes", "No"),
+                                                  married = c("Yes", "No")), 
+                      prompt_fields_descriptions = list(college = "Information about the individual's college degree.", 
+                                                        religion = "Information about any religious history the individual has."))
+```
+
+## Few-Shot Prompting with `get_bio_function_call()`
+
+The syntax for few-shot prompting with `get_bio_function_call()` is the same as the syntax for `get_bio()`. We should input the few-shot examples as a data.frame or tibble with example biographical text in a column called "bio", example biographical names in a column called "bio_name" (if desired), and example biographical data in columns with names from prompt_fields. 
+
+Looking at the example from the [Few-Shot Prompting with `get_bio()`] section: 
+
+```{r}
+fewshot_example <- data.frame(bio = "John Smith was born on the thirteenth of October in 1992 in St. Louis, MO. He went on to earn his Bachelor of Arts degree from Invisible University where he met his wife, Marie. Raised as a Quaker, he was opposed to entering the military.", 
+                              bio_name = "John Smith", 
+                              birth_date = "10/13/1992", 
+                              town_of_birth = "St. Louis", 
+                              state_of_birth = "Missouri", 
+                              college = "Invisible University - B.A.", 
+                              religion = "Quaker", 
+                              military_experience = "No", 
+                              married = "Yes")
+
+get_bio_function_call(bio = driver_bio,
+        bio_name = "Adam Driver",
+        prompt_fields = c("birth_date", "town_of_birth", "state_of_birth",
+                          "college", "religion", "military_experience",
+                          "married"),
+        prompt_fields_formats = list(birth_date = "{MM}/{DD}/{YYYY}",
+                                    college = "{SCHOOL} - {DEGREE}"),
+        prompt_fields_values = list(military_experience = c("Yes", "No"),
+                                    married = c("Yes", "No")), 
+        prompt_fewshot = fewshot_example)
+```
+
 

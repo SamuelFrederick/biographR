@@ -3,19 +3,19 @@ test_that("Make sure input checking works properly.", {
   expect_error(get_bio(bio = NULL), regexp = "Please input a bio as a string")
   expect_error(get_bio(bio = "Test", bio_name = "Test", prompt_fields = 1),
                regexp = "prompt_fields argument must be NULL or a character")
-  expect_error(get_bio(bio = "Test", bio_name = "Test", prompt_fields_format = 1),
-               regexp = "prompt_fields_format argument must be NULL, a character")
+  expect_error(get_bio(bio = "Test", bio_name = "Test", prompt_fields_formats = 1),
+               regexp = "prompt_fields_formats argument must be NULL or a named list")
   get_bio(bio = "Test", bio_name = "Test", prompt_fields = c("college", "highest_level_of_education"),
           prompt_fields_values = c("T1", "T2", "T3"))|>
-    expect_error(regexp = "NULL or a list of character vectors")
+    expect_error(regexp = "NULL or a named list of character vectors")
   get_bio(bio = "Test", bio_name = "Test", prompt_fields = c("college", "highest_level_of_education"),
-          prompt_fields_format = list(college = "{SCHOOL} - {YEAR} - {DEGREE}",
+          prompt_fields_formats = list(college = "{SCHOOL} - {YEAR} - {DEGREE}",
                                       occupation = "{OCCUPATION} - {YEAR}"),
           prompt_fields_values = as.list(c("T1", "T2", "T3"))) |>
     expect_error(regexp = "unnamed, it must be the same") |>
-    expect_warning(regexp = "Some names of prompt_fields_format are not in")
+    expect_warning(regexp = "Some names of prompt_fields_formats are not in")
   get_bio(bio = "Test", bio_name = "Test", prompt_fields = c("college", "highest_level_of_education"),
-          prompt_fields_format = c("SCHOOL", "DEGREE", "YEAR"),
+          prompt_fields_formats = list("SCHOOL",  "DEGREE", "YEAR"),
           prompt_fields_values = list(college = c("Yes", "No"),
                                       military_background = c("Yes", "No")))|>
     expect_error(regexp = "unnamed, it must be the same")|>
@@ -38,7 +38,7 @@ test_that("Make sure input checking works properly.", {
           prompt_fields = c("college", "highest_level_of_education"))|>
     expect_error(regexp = "Custom prompt should include desired fields, values, and formats")
   get_bio(bio = "Test", bio_name = "Test", prompt = "This is a test",
-          prompt_fields_format = c("college", "highest_level_of_education"))|>
+          prompt_fields_formats = c("college", "highest_level_of_education"))|>
     expect_error(regexp = "Custom prompt should include desired fields, values, and formats")
   get_bio(bio = "Test", bio_name = "Test", prompt = "This is a test",
           prompt_fields_values = c("college", "highest_level_of_education"))|>
@@ -46,10 +46,6 @@ test_that("Make sure input checking works properly.", {
   get_bio(bio = "Test", bio_name = "Test", prompt_fields = c("college", "highest_level_of_education"),
           prompt_fields_values = c("T1", "T2", "T3"))|>
     expect_error(regexp = "The prompt_fields_values argument must be")
-
-  get_bio(bio = "Test", bio_name = "Test", prompt_fields = c("college"),
-          post_process_fields = "b") |>
-    expect_error(regexp = "Please input TRUE or FALSE")
 
 })
 test_that("Make sure get_bio() returns proper output", {
@@ -59,7 +55,7 @@ test_that("Make sure get_bio() returns proper output", {
           prompt_fields = c("college", "graduate_school",
                             "highest_level_of_education", "gender",
                             "married"),
-          prompt_fields_format = list(college = "{SCHOOL} - {DEGREE}",
+          prompt_fields_formats = list(college = "{SCHOOL} - {DEGREE}",
                                       graduate_school = "{SCHOOL} - {DEGREE}",
                                       highest_level_of_education = "{DEGREE}"),
           prompt_fields_values = list(married = c("Yes", "No")),
