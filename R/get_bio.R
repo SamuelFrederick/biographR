@@ -1,16 +1,12 @@
 #' Get structured biographical data from unstructured text
 #'
 #' @description
-#' `get_bio()`() uses standard ChatGPT chat completions to retrieve structured data from input text and allows for fully customizable prompts.
+#' `get_bio()` uses standard ChatGPT chat completions to retrieve structured data from input text and allows for fully customizable prompts.
 #'
 #' `get_bio_function_call()` uses ChatGPT function calling to retrieve structured data from input text.
 #'
 #' @param bio The bio to be processed, a string
 #' @param bio_name The name of the individual whose biographical information is desired, a string. For `get_bio()`, bio_name can be a vector of strings containing the names of all individuals for whom biographical information is desired
-#' @param openai_api_key API key for OpenAI, a string. If this is NULL, `get_bio()` searches .Renviron for API key.
-#' @param openai_model ChatGPT model to use, defaults to "chatgpt-3.5-turbo"
-#' @param openai_temperature A number between 0 and 2, specifies the amount of randomness in ChatGPT, with more randomness for higher numbers, defaults to 0
-#' @param openai_seed An integer, pecifies a random seed for ChatGPT (this is in the development stage at OpenAI, so it might not work perfectly).
 #' @param prompt Only for use in `get_bio()`. A string. If desired, a custom prompt. This overrides the default prompt and should include any desired prompt fields, formats, and values.
 #' @param prompt_fields A character vector of desired biographical output fields (e.g., "college", "graduate_school")
 #' @param prompt_fields_formats A named list of strings giving desired formats for output fields (e.g., "\{SCHOOL\} - \{DEGREE\}"). Names should be present in prompt_fields.
@@ -21,6 +17,10 @@
 #'                                      bio_name = "John Smith",
 #'                                      gender = "Male",
 #'                                      college = "Nowhere University - B.A.")
+#' @param openai_api_key API key for OpenAI, a string. If this is NULL, `get_bio()` searches .Renviron for API key.
+#' @param openai_model ChatGPT model to use, defaults to "chatgpt-3.5-turbo"
+#' @param openai_temperature A number between 0 and 2, specifies the amount of randomness in ChatGPT, with more randomness for higher numbers, defaults to 0
+#' @param openai_seed An integer, pecifies a random seed for ChatGPT (this is in the development stage at OpenAI, so it might not work perfectly).
 #'
 #' @return A tibble containing desired biographical information or unprocessed API output from custom prompt
 #' @export
@@ -47,40 +47,40 @@
 #'              Congress); Speaker of the House (One Hundred Eighteenth
 #'              Congress).",
 #'       bio_name = "Kevin McCarthy")
-#'       get_bio_function_call(bio = "MCCARTHY, KEVIN, a Representative from California;
-#'                                    born in Bakersfield, Kern County, Calif., January 26,
-#'                                    1965; graduated from Bakersfield High School,
-#'                                    Bakersfield, Calif., 1983; attended Bakersfield College,
-#'                                    Bakersfield. Calif., 1983-1986; B.S., California State
-#'                                    University, Bakersfield, Calif., 1989; M.B.A., California
-#'                                    State University, Bakersfield, Calif., 1994; staff,
-#'                                    United States Representative William Thomas of California,
-#'                                    1987-2002; member of the California state assembly,
-#'                                    2002-2007, minority leader, 2004-2006; elected as a
-#'                                    Republican to the One Hundred Tenth and to the eight
-#'                                    succeeding Congresses (January 3, 2007-present); majority
-#'                                    whip (One Hundred Twelfth and One Hundred Thirteenth
-#'                                    Congresses); majority leader (One Hundred Thirteenth
-#'                                    through One Hundred Fifteenth Congresses); minority
-#'                                    leader (One Hundred Sixteenth and One Hundred Seventeenth
-#'                                    Congress); Speaker of the House (One Hundred Eighteenth
-#'                                    Congress).",
-#'                              bio_name = "Kevin McCarthy",
-#'                              prompt_fields = c("highest_level_of_education",
-#'                                                  "previous_occupation", "birth_date"),
-#'                              prompt_fields_formats = list(highest_level_of_education = "{DEGREE}",
-#'                              previous_occupation = "{OCCUPATION} - {YEARS}",
-#'                              birth_date = "{MM}/{DD}/{YYYY}"))
+#' get_bio_function_call(bio = "MCCARTHY, KEVIN, a Representative from California;
+#'                              born in Bakersfield, Kern County, Calif., January 26,
+#'                              1965; graduated from Bakersfield High School,
+#'                              Bakersfield, Calif., 1983; attended Bakersfield College,
+#'                              Bakersfield. Calif., 1983-1986; B.S., California State
+#'                              University, Bakersfield, Calif., 1989; M.B.A., California
+#'                              State University, Bakersfield, Calif., 1994; staff,
+#'                              United States Representative William Thomas of California,
+#'                              1987-2002; member of the California state assembly,
+#'                              2002-2007, minority leader, 2004-2006; elected as a
+#'                              Republican to the One Hundred Tenth and to the eight
+#'                              succeeding Congresses (January 3, 2007-present); majority
+#'                              whip (One Hundred Twelfth and One Hundred Thirteenth
+#'                              Congresses); majority leader (One Hundred Thirteenth
+#'                              through One Hundred Fifteenth Congresses); minority
+#'                              leader (One Hundred Sixteenth and One Hundred Seventeenth
+#'                              Congress); Speaker of the House (One Hundred Eighteenth
+#'                              Congress).",
+#'                        bio_name = "Kevin McCarthy",
+#'                        prompt_fields = c("highest_level_of_education",
+#'                                          "previous_occupation", "birth_date"),
+#'                        prompt_fields_formats = list(highest_level_of_education = "{DEGREE}",
+#'                        previous_occupation = "{OCCUPATION} - {YEARS}",
+#'                        birth_date = "{MM}/{DD}/{YYYY}"))
 get_bio <- function(bio, bio_name = NULL,
-                    openai_api_key = NULL,
-                    openai_model = "gpt-3.5-turbo",
-                    openai_temperature = 0,
-                    openai_seed = NULL,
                     prompt = NULL,
                     prompt_fields = NULL,
                     prompt_fields_formats = NULL,
                     prompt_fields_values = NULL,
-                    prompt_fewshot = NULL) {
+                    prompt_fewshot = NULL,
+                    openai_api_key = NULL,
+                    openai_model = "gpt-3.5-turbo",
+                    openai_temperature = 0,
+                    openai_seed = NULL) {
 
   if(missing(bio)) bio <- NULL
 

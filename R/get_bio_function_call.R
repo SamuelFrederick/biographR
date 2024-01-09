@@ -1,15 +1,15 @@
 #' @rdname get_bio
 #' @export
 get_bio_function_call <- function(bio, bio_name = NULL,
-                    openai_api_key = NULL,
-                    openai_model = "gpt-3.5-turbo",
-                    openai_temperature = 0,
-                    openai_seed = NULL,
                     prompt_fields = NULL,
                     prompt_fields_formats = NULL,
                     prompt_fields_values = NULL,
                     prompt_fields_descriptions = NULL,
-                    prompt_fewshot = NULL) {
+                    prompt_fewshot = NULL,
+                    openai_api_key = NULL,
+                    openai_model = "gpt-3.5-turbo",
+                    openai_temperature = 0,
+                    openai_seed = NULL) {
 
   if(missing(bio)) bio <- NULL
   if(!is.null(prompt_fewshot)) prompt_fewshot <- get_prompt_fewshot_function_call(prompt_fewshot = prompt_fewshot,

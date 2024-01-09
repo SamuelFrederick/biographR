@@ -8,43 +8,35 @@
 get_bio(
   bio,
   bio_name = NULL,
-  openai_api_key = NULL,
-  openai_model = "gpt-3.5-turbo",
-  openai_temperature = 0,
-  openai_seed = NULL,
   prompt = NULL,
   prompt_fields = NULL,
   prompt_fields_formats = NULL,
   prompt_fields_values = NULL,
-  prompt_fewshot = NULL
+  prompt_fewshot = NULL,
+  openai_api_key = NULL,
+  openai_model = "gpt-3.5-turbo",
+  openai_temperature = 0,
+  openai_seed = NULL
 )
 
 get_bio_function_call(
   bio,
   bio_name = NULL,
-  openai_api_key = NULL,
-  openai_model = "gpt-3.5-turbo",
-  openai_temperature = 0,
-  openai_seed = NULL,
   prompt_fields = NULL,
   prompt_fields_formats = NULL,
   prompt_fields_values = NULL,
   prompt_fields_descriptions = NULL,
-  prompt_fewshot = NULL
+  prompt_fewshot = NULL,
+  openai_api_key = NULL,
+  openai_model = "gpt-3.5-turbo",
+  openai_temperature = 0,
+  openai_seed = NULL
 )
 }
 \arguments{
 \item{bio}{The bio to be processed, a string}
 
 \item{bio_name}{The name of the individual whose biographical information is desired, a string. For \code{get_bio()}, bio_name can be a vector of strings containing the names of all individuals for whom biographical information is desired}
-
-\item{openai_api_key}{API key for OpenAI, a string. If this is NULL, \code{get_bio()} searches .Renviron for API key.}
-
-\item{openai_model}{ChatGPT model to use, defaults to "chatgpt-3.5-turbo"}
-
-\item{openai_temperature}{A number between 0 and 2, specifies the amount of randomness in ChatGPT, with more randomness for higher numbers, defaults to 0}
-
-\item{openai_seed}{An integer, pecifies a random seed for ChatGPT (this is in the development stage at OpenAI, so it might not work perfectly).}
 
 \item{prompt}{Only for use in \code{get_bio()}. A string. If desired, a custom prompt. This overrides the default prompt and should include any desired prompt fields, formats, and values.}
 
@@ -62,13 +54,21 @@ gender = "Male",
 college = "Nowhere University - B.A.")
 }}
 
+\item{openai_api_key}{API key for OpenAI, a string. If this is NULL, \code{get_bio()} searches .Renviron for API key.}
+
+\item{openai_model}{ChatGPT model to use, defaults to "chatgpt-3.5-turbo"}
+
+\item{openai_temperature}{A number between 0 and 2, specifies the amount of randomness in ChatGPT, with more randomness for higher numbers, defaults to 0}
+
+\item{openai_seed}{An integer, pecifies a random seed for ChatGPT (this is in the development stage at OpenAI, so it might not work perfectly).}
+
 \item{prompt_fields_descriptions}{Only for use in \code{get_bio_function_call()}. A named list of strings with additional text describing each prompt field. Names should be present in prompt_fields.}
 }
 \value{
 A tibble containing desired biographical information or unprocessed API output from custom prompt
 }
 \description{
-\code{get_bio()}() uses standard ChatGPT chat completions to retrieve structured data from input text and allows for fully customizable prompts.
+\code{get_bio()} uses standard ChatGPT chat completions to retrieve structured data from input text and allows for fully customizable prompts.
 
 \code{get_bio_function_call()} uses ChatGPT function calling to retrieve structured data from input text.
 }
@@ -94,28 +94,28 @@ get_bio(bio = "MCCARTHY, KEVIN, a Representative from California;
              Congress); Speaker of the House (One Hundred Eighteenth
              Congress).",
       bio_name = "Kevin McCarthy")
-      get_bio_function_call(bio = "MCCARTHY, KEVIN, a Representative from California;
-                                   born in Bakersfield, Kern County, Calif., January 26,
-                                   1965; graduated from Bakersfield High School,
-                                   Bakersfield, Calif., 1983; attended Bakersfield College,
-                                   Bakersfield. Calif., 1983-1986; B.S., California State
-                                   University, Bakersfield, Calif., 1989; M.B.A., California
-                                   State University, Bakersfield, Calif., 1994; staff,
-                                   United States Representative William Thomas of California,
-                                   1987-2002; member of the California state assembly,
-                                   2002-2007, minority leader, 2004-2006; elected as a
-                                   Republican to the One Hundred Tenth and to the eight
-                                   succeeding Congresses (January 3, 2007-present); majority
-                                   whip (One Hundred Twelfth and One Hundred Thirteenth
-                                   Congresses); majority leader (One Hundred Thirteenth
-                                   through One Hundred Fifteenth Congresses); minority
-                                   leader (One Hundred Sixteenth and One Hundred Seventeenth
-                                   Congress); Speaker of the House (One Hundred Eighteenth
-                                   Congress).",
-                             bio_name = "Kevin McCarthy",
-                             prompt_fields = c("highest_level_of_education",
-                                                 "previous_occupation", "birth_date"),
-                             prompt_fields_formats = list(highest_level_of_education = "{DEGREE}",
-                             previous_occupation = "{OCCUPATION} - {YEARS}",
-                             birth_date = "{MM}/{DD}/{YYYY}"))
+get_bio_function_call(bio = "MCCARTHY, KEVIN, a Representative from California;
+                             born in Bakersfield, Kern County, Calif., January 26,
+                             1965; graduated from Bakersfield High School,
+                             Bakersfield, Calif., 1983; attended Bakersfield College,
+                             Bakersfield. Calif., 1983-1986; B.S., California State
+                             University, Bakersfield, Calif., 1989; M.B.A., California
+                             State University, Bakersfield, Calif., 1994; staff,
+                             United States Representative William Thomas of California,
+                             1987-2002; member of the California state assembly,
+                             2002-2007, minority leader, 2004-2006; elected as a
+                             Republican to the One Hundred Tenth and to the eight
+                             succeeding Congresses (January 3, 2007-present); majority
+                             whip (One Hundred Twelfth and One Hundred Thirteenth
+                             Congresses); majority leader (One Hundred Thirteenth
+                             through One Hundred Fifteenth Congresses); minority
+                             leader (One Hundred Sixteenth and One Hundred Seventeenth
+                             Congress); Speaker of the House (One Hundred Eighteenth
+                             Congress).",
+                       bio_name = "Kevin McCarthy",
+                       prompt_fields = c("highest_level_of_education",
+                                         "previous_occupation", "birth_date"),
+                       prompt_fields_formats = list(highest_level_of_education = "{DEGREE}",
+                       previous_occupation = "{OCCUPATION} - {YEARS}",
+                       birth_date = "{MM}/{DD}/{YYYY}"))
 }

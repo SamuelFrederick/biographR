@@ -44,14 +44,14 @@ clean_columns_function_call(
 Example: list(education = c("J.D.", "BA", "GED", "Did not graduate high school"),
 education_gpt = c("Graduate School", "College, "High School or less", "High School or less"))}
 
-\item{prompt_fewshot_type}{Only for clean_columns(). A string, one of "specific" or "general", defaults to "specific".
+\item{prompt_fewshot_type}{Only for \code{clean_columns()}. A string, one of "specific" or "general", defaults to "specific".
 If type is "specific", prompt_fewshot must have column names from data, and few-shot examples should correspond to the specific columns from the data.
 If type is "general", examples in prompt_fewshot will be reused for each column. It is recommended that the few-shot examples in prompt_fewshot include example values or formats as well with suffix _values and _formats.}
 
 \item{prompt_fewshot_n}{An integer or named list of integers (with names from example inputs in prompt_fewshot) giving the number of segments to divide each example input into. For example, prompt_fewshot_n=2 would divide inputted example vectors into two separate example prompts and outputs.
-Note: for clean_columns_function_call(), this must be an integer.}
+Note: for \code{clean_columns_function_call()}, this must be an integer.}
 
-\item{openai_api_key}{API key for OpenAI, a string. If this is NULL, clean_columns() searches .Renviron for API key.}
+\item{openai_api_key}{API key for OpenAI, a string. If this is NULL, \code{clean_columns()} searches .Renviron for API key.}
 
 \item{openai_model}{ChatGPT model to use, defaults to "chatgpt-3.5-turbo"}
 
@@ -59,9 +59,9 @@ Note: for clean_columns_function_call(), this must be an integer.}
 
 \item{openai_seed}{An integer, specifies a random seed for ChatGPT (this is in the development stage at OpenAI, so it might not work perfectly)}
 
-\item{column_descriptions}{Only for clean_columns_function_call(). A named list with column names from data as names and values as strings with the desired description for the column}
+\item{column_descriptions}{Only for \code{clean_columns_function_call()}. A named list with column names from data as names and values as strings with the desired description for the column}
 
-\item{openai_context_window}{Only for clean_columns_function_call(). An integer, defaults to 4,096, specifies the context window for the ChatGPT model in use.
+\item{openai_context_window}{Only for \code{clean_columns_function_call()}. An integer, defaults to 4,096, specifies the context window for the ChatGPT model in use.
 This is used to determine whether to split the columns to be cleaned into several portions. Note: this is a rough approximation of whether the prompt is too long. It is best to split your data into parts if needed or to use larger GPT models.}
 }
 \value{
@@ -69,13 +69,13 @@ Data with new columns for each entry in column_values containing new mappings
 }
 \description{
 Maps old data in names of column_values to new categories and formats using ChatGPT.
-clean_columns() returns data with new columns corresponding to matched and reformatted
+\code{clean_columns()} returns data with new columns corresponding to matched and reformatted
 values. This can be helpful for processing messy or unstructured text data
-in a column (e.g., open-ended survey responses, names, etc.). clean_columns()
+in a column (e.g., open-ended survey responses, names, etc.). \code{clean_columns()}
 is particularly helpful for post-processing the output of \code{\link[=get_bio]{get_bio()}}.
 
-clean_columns() uses the standard chat completion to reformat columns. It makes separate API calls for each column.
-clean_columns_function_call() uses function calling to reformat columns. It tries to complete as many columns as possible in a single API call.
+\code{clean_columns()} uses the standard chat completion to reformat columns. It makes separate API calls for each column.
+\code{clean_columns_function_call()} uses function calling to reformat columns. It tries to complete as many columns as possible in a single API call.
 }
 \examples{
 df <- data.frame(age = rnorm(4, 50, 10),

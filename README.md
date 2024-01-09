@@ -40,6 +40,9 @@ get_bio(bio = "John Smith graduated from Nowhere College with a B.A. in 1962. He
         prompt_fields = c("college", "graduate_school", 
                           "highest_level_of_education", "gender",
                           "married"))
+#> Input Tokens: 164
+#> Output Tokens: 50
+#> Total Tokens: 214
 #> # A tibble: 1 × 5
 #>   college         graduate_school          highest_level_of_edu…¹ gender married
 #>   <chr>           <chr>                    <chr>                  <chr>  <chr>  
@@ -48,10 +51,10 @@ get_bio(bio = "John Smith graduated from Nowhere College with a B.A. in 1962. He
 ```
 
 We can also customize the output further using the
-`prompt_fields_format` and `prompt_fields_values` arguments.
-Additionally, while the package defaults to ChatGPT 3.5, ChatGPT 4 often
-appears to perform somewhat better in extracting subtler information
-(e.g., gender from pronouns).
+`prompt_fields_formats` and `prompt_fields_values` arguments.
+Additionally, while the package defaults to GPT 3.5, GPT 4 often appears
+to perform somewhat better in extracting subtler information (e.g.,
+gender from pronouns).
 
 ``` r
 get_bio(bio = "John Smith graduated from Nowhere College with a B.A. in 1962. He then went on to receive a Ph.D. from Nonexistent University. At the same time, his wife, Sally Smith, was earning her M.D. from Invisible University.", 
@@ -59,11 +62,14 @@ get_bio(bio = "John Smith graduated from Nowhere College with a B.A. in 1962. He
         prompt_fields = c("college", "graduate_school", 
                           "highest_level_of_education", "gender",
                           "married"), 
-        prompt_fields_format = list(college = "{SCHOOL} - {DEGREE}", 
+        prompt_fields_formats = list(college = "{SCHOOL} - {DEGREE}", 
                                     graduate_school = "{SCHOOL} - {DEGREE}", 
                                     highest_level_of_education = "{DEGREE}"), 
         prompt_fields_values = list(married = c("Yes", "No")), 
         openai_model = "gpt-4")
+#> Input Tokens: 192
+#> Output Tokens: 53
+#> Total Tokens: 245
 #> # A tibble: 1 × 5
 #>   college                graduate_school   highest_level_of_edu…¹ gender married
 #>   <chr>                  <chr>             <chr>                  <chr>  <chr>  

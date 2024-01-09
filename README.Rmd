@@ -50,7 +50,7 @@ get_bio(bio = "John Smith graduated from Nowhere College with a B.A. in 1962. He
                           "married"))
 ```
 
-We can also customize the output further using the `prompt_fields_format` and `prompt_fields_values` arguments. Additionally, while the package defaults to ChatGPT 3.5, ChatGPT 4 often appears to perform somewhat better in extracting subtler information (e.g., gender from pronouns).
+We can also customize the output further using the `prompt_fields_formats` and `prompt_fields_values` arguments. Additionally, while the package defaults to GPT 3.5, GPT 4 often appears to perform somewhat better in extracting subtler information (e.g., gender from pronouns).
 
 ```{r example 2}
 get_bio(bio = "John Smith graduated from Nowhere College with a B.A. in 1962. He then went on to receive a Ph.D. from Nonexistent University. At the same time, his wife, Sally Smith, was earning her M.D. from Invisible University.", 
@@ -58,9 +58,14 @@ get_bio(bio = "John Smith graduated from Nowhere College with a B.A. in 1962. He
         prompt_fields = c("college", "graduate_school", 
                           "highest_level_of_education", "gender",
                           "married"), 
-        prompt_fields_format = list(college = "{SCHOOL} - {DEGREE}", 
+        prompt_fields_formats = list(college = "{SCHOOL} - {DEGREE}", 
                                     graduate_school = "{SCHOOL} - {DEGREE}", 
                                     highest_level_of_education = "{DEGREE}"), 
         prompt_fields_values = list(married = c("Yes", "No")), 
         openai_model = "gpt-4")
 ```
+
+
+
+
+

@@ -93,8 +93,8 @@ We can also use ChatGPT's function calling feature which provides ChatGPT with a
 
 `clean_columns_function_call()` is broadly similar to `clean_columns()` with four main differences: 
 
-1. It adds the optional `column_descriptions` argument which, like `column_values` and `column_formats`, is a named list of characters with names from the columns of `data`. The values are the descriptions of the arguments of the function call, if desired. For example, you may wish to describe what exactly should be in the cleaned column apart from the values and formats. 
-2. It does not take a `prompt_fewshot_type` argument. 
+1. It adds the optional `column_descriptions` argument which, like `column_formats`, is a named list of strings with names from the columns of `data`. The values are the descriptions of the arguments of the function call, if desired. For example, you may wish to describe what exactly should be in the cleaned column apart from the values and formats. 
+2. It does not take a `prompt_fewshot_type` argument (Few-shot prompting should be specific for function calling). 
 3. `prompt_fewshot_n` must be an integer.
 4. It adds the optional `openai_context_window` argument. Because `clean_columns_function_call()` tries to clean all of the columns in one API call, some column combinations might be larger than what can be processed by ChatGPT. In this case, `clean_columns_function_call()` tries to break the columns up into separate API calls which are smaller than the context window.
 
@@ -108,7 +108,7 @@ clean_columns_function_call(data = df,
 
 ## Few-Shot Prompting with `clean_columns_function_call()`
 
-Like `clean_columns()`, `clean_columns_function_call()` also supports few-shot prompting, which may improve output. For more details on the specifics of few-shot prompting, see [Few-Shot Prompting with `clean_columns_function_call()].
+Like `clean_columns()`, `clean_columns_function_call()` also supports few-shot prompting, which may improve output. For more details on the specifics of few-shot prompting, see [Few-Shot Prompting with `clean_columns_function_call()`].
 
 ```{r}
 clean_columns_function_call(data = df,

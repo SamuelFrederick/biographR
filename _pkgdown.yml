@@ -1,4 +1,7 @@
 url: https://samuelfrederick.github.io/biographR/
+authors:
+  Samuel Frederick:
+    href: "https://samueldfrederick.com"
 template:
   bootstrap: 5
 
