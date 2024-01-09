@@ -61,12 +61,12 @@ clean_columns_function_call() uses function calling to reformat columns. It trie
 
     <div class="ref-description section level2">
     <p>Maps old data in names of column_values to new categories and formats using ChatGPT.
-clean_columns() returns data with new columns corresponding to matched and reformatted
+<code>clean_columns()</code> returns data with new columns corresponding to matched and reformatted
 values. This can be helpful for processing messy or unstructured text data
-in a column (e.g., open-ended survey responses, names, etc.). clean_columns()
+in a column (e.g., open-ended survey responses, names, etc.). <code>clean_columns()</code>
 is particularly helpful for post-processing the output of <code><a href="get_bio.html">get_bio()</a></code>.</p>
-<p>clean_columns() uses the standard chat completion to reformat columns. It makes separate API calls for each column.
-clean_columns_function_call() uses function calling to reformat columns. It tries to complete as many columns as possible in a single API call.</p>
+<p><code>clean_columns()</code> uses the standard chat completion to reformat columns. It makes separate API calls for each column.
+<code>clean_columns_function_call()</code> uses function calling to reformat columns. It tries to complete as many columns as possible in a single API call.</p>
     </div>
 
     <div class="section level2">
@@ -120,18 +120,18 @@ education_gpt = c("Graduate School", "College, "High School or less", "High Scho
 
 
 <dt>prompt_fewshot_type</dt>
-<dd><p>Only for clean_columns(). A string, one of "specific" or "general", defaults to "specific".
+<dd><p>Only for <code>clean_columns()</code>. A string, one of "specific" or "general", defaults to "specific".
 If type is "specific", prompt_fewshot must have column names from data, and few-shot examples should correspond to the specific columns from the data.
 If type is "general", examples in prompt_fewshot will be reused for each column. It is recommended that the few-shot examples in prompt_fewshot include example values or formats as well with suffix _values and _formats.</p></dd>
 
 
 <dt>prompt_fewshot_n</dt>
 <dd><p>An integer or named list of integers (with names from example inputs in prompt_fewshot) giving the number of segments to divide each example input into. For example, prompt_fewshot_n=2 would divide inputted example vectors into two separate example prompts and outputs.
-Note: for clean_columns_function_call(), this must be an integer.</p></dd>
+Note: for <code>clean_columns_function_call()</code>, this must be an integer.</p></dd>
 
 
 <dt>openai_api_key</dt>
-<dd><p>API key for OpenAI, a string. If this is NULL, clean_columns() searches .Renviron for API key.</p></dd>
+<dd><p>API key for OpenAI, a string. If this is NULL, <code>clean_columns()</code> searches .Renviron for API key.</p></dd>
 
 
 <dt>openai_model</dt>
@@ -147,11 +147,11 @@ Note: for clean_columns_function_call(), this must be an integer.</p></dd>
 
 
 <dt>column_descriptions</dt>
-<dd><p>Only for clean_columns_function_call(). A named list with column names from data as names and values as strings with the desired description for the column</p></dd>
+<dd><p>Only for <code>clean_columns_function_call()</code>. A named list with column names from data as names and values as strings with the desired description for the column</p></dd>
 
 
 <dt>openai_context_window</dt>
-<dd><p>Only for clean_columns_function_call(). An integer, defaults to 4,096, specifies the context window for the ChatGPT model in use.
+<dd><p>Only for <code>clean_columns_function_call()</code>. An integer, defaults to 4,096, specifies the context window for the ChatGPT model in use.
 This is used to determine whether to split the columns to be cleaned into several portions. Note: this is a rough approximation of whether the prompt is too long. It is best to split your data into parts if needed or to use larger GPT models.</p></dd>
 
 </dl></div>
@@ -174,20 +174,20 @@ This is used to determine whether to split the columns to be cleaned into severa
 <span class="r-in"><span>                                   name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Steph Curry"</span>, <span class="st">"Michael Jordan"</span>,</span></span>
 <span class="r-in"><span>                                            <span class="st">"LeBron James"</span>, <span class="st">"Shaquille O'Neal"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> education</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Input Tokens: 106</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Output Tokens:89</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total Tokens:195</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Input Tokens: 114</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Output Tokens:30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total Tokens:144</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> name</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Input Tokens: 124</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Output Tokens:37</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total Tokens:161</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Input Tokens: 132</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Output Tokens:30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total Tokens:162</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     age education   name                     education_gpt   name_gpt        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  53.7 BA          Wardell Stephen Curry II College         Steph Curry     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>  52.0 B.A.        Michael J Jordan         College         Michael Jordan  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>  49.0 High School James, LEBRON            High School     LeBron James    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>  57.7 MBA         Shaq                     Graduate School Shaquille O'Neal</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  56.2 BA          Wardell Stephen Curry II College         Steph Curry     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>  44.6 B.A.        Michael J Jordan         College         Michael Jordan  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>  43.6 High School James, LEBRON            High School     LeBron James    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>  68.2 MBA         Shaq                     Graduate School Shaquille O'Neal</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">clean_columns</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>birthday <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"08-13-1923"</span>,</span></span>
 <span class="r-in"><span>                                             <span class="st">"05/15/1976"</span>,</span></span>
@@ -195,9 +195,9 @@ This is used to determine whether to split the columns to be cleaned into severa
 <span class="r-in"><span>                                             <span class="st">"19th of March in 1994"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>              column_formats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>birthday <span class="op">=</span> <span class="st">"{MM}/{DD}/{YYYY}"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> birthday</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Input Tokens: 121</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Output Tokens:47</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total Tokens:168</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Input Tokens: 129</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Output Tokens:40</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total Tokens:169</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   birthday              birthday_gpt</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span>
@@ -216,10 +216,10 @@ This is used to determine whether to split the columns to be cleaned into severa
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     age education   name                     education_gpt      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  53.7 BA          Wardell Stephen Curry II College            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>  52.0 B.A.        Michael J Jordan         College            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>  49.0 High School James, LEBRON            High School or less</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>  57.7 MBA         Shaq                     Graduate School    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  56.2 BA          Wardell Stephen Curry II College            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>  44.6 B.A.        Michael J Jordan         College            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>  43.6 High School James, LEBRON            High School or less</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>  68.2 MBA         Shaq                     Graduate School    </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -227,7 +227,7 @@ This is used to determine whether to split the columns to be cleaned into severa
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Samuel Frederick.</p>
+  <p></p><p>Developed by <a href="https://samueldfrederick.com" class="external-link">Samuel Frederick</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
