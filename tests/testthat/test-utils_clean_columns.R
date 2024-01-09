@@ -289,7 +289,7 @@ test_that("Test few-shot prompt function for clean_columns()", {
 
 })
 test_that("Check get_prompt_clean_columns_wrapper() output", {
-  system_prompt <- "You are a system that reformats an array of user values according to user specifications and matches user values to a specified array of new categories. Your output should be an array of the same length as the input array containing only the reformatted input values and newly matched categories."
+  system_prompt <- "You are a system that reformats an array of user values according to user specifications and matches user values to a specified array of new categories. Your output should be an array containing only the reformatted input values and newly matched categories."
   get_prompt_clean_columns_wrapper(output_vector = c("HS or less", "College", "Graduate School"),
                                    output_format = NULL,
                                    column_name = "education",

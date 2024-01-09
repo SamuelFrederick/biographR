@@ -395,7 +395,7 @@ get_prompt_clean_columns_wrapper <- function(output_vector,
     append(
       list(
         list("role" = "system",
-             "content" = "You are a system that reformats an array of user values according to user specifications and matches user values to a specified array of new categories. Your output should be an array of the same length as the input array containing only the reformatted input values and newly matched categories.")
+             "content" = "You are a system that reformats an array of user values according to user specifications and matches user values to a specified array of new categories. Your output should be an array containing only the reformatted input values and newly matched categories.")
       ),
       prompt_fewshot
     ),
