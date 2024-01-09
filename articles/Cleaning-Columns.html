@@ -129,22 +129,22 @@ the cleaned columns denoted by a “_gpt” suffix.</p>
 <span>              column_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>education <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"High School or less"</span>, <span class="st">"College"</span>, <span class="st">"Graduate School"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>              column_formats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>birthdate <span class="op">=</span> <span class="st">"MM/DD/YYYY"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; education</span></span>
-<span><span class="co">#&gt; Input Tokens: 124</span></span>
-<span><span class="co">#&gt; Output Tokens:52</span></span>
-<span><span class="co">#&gt; Total Tokens:176</span></span>
+<span><span class="co">#&gt; Input Tokens: 116</span></span>
+<span><span class="co">#&gt; Output Tokens:154</span></span>
+<span><span class="co">#&gt; Total Tokens:270</span></span>
 <span><span class="co">#&gt; birthdate</span></span>
-<span><span class="co">#&gt; Input Tokens: 152</span></span>
+<span><span class="co">#&gt; Input Tokens: 144</span></span>
 <span><span class="co">#&gt; Output Tokens:74</span></span>
-<span><span class="co">#&gt; Total Tokens:226</span></span>
+<span><span class="co">#&gt; Total Tokens:218</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   education           birthdate           education_gpt       birthdate_gpt</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BA                  Sept. 19th, 1974    College             09/19/1974   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B.A.                October 20, 1963    High School or less 10/20/1963   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B.A.                October 20, 1963    College             10/20/1963   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> GED                 3.12.1987           High School or less 03/12/1987   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Ph.D.               15 of April in 1990 Graduate School     04/15/1990   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> MD                  7/6/81              Graduate School     07/06/1981   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Master's            3rd of August, 1953 College             08/03/1953   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Master's            3rd of August, 1953 Graduate School     08/03/1953   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> High School Diploma 2/14/1934           High School or less 02/14/1934</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="few-shot-prompting-with-clean_columns">Few-Shot Prompting with <code>clean_columns()</code><a class="anchor" aria-label="anchor" href="#few-shot-prompting-with-clean_columns"></a>
@@ -196,9 +196,9 @@ respectively.</p>
 <span>              prompt_fewshot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>education <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GED"</span>, <span class="st">"BA"</span>, <span class="st">"MPhil"</span>, <span class="st">"BS"</span>, <span class="st">"Bachelor's"</span>, <span class="st">"10th grade"</span><span class="op">)</span>,</span>
 <span>                                          education_gpt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"High School or less"</span>, <span class="st">"College"</span>, <span class="st">"Graduate School"</span>, <span class="st">"College"</span>, <span class="st">"College"</span>, <span class="st">"High School or less"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; education</span></span>
-<span><span class="co">#&gt; Input Tokens: 213</span></span>
+<span><span class="co">#&gt; Input Tokens: 205</span></span>
 <span><span class="co">#&gt; Output Tokens:31</span></span>
-<span><span class="co">#&gt; Total Tokens:244</span></span>
+<span><span class="co">#&gt; Total Tokens:236</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 3</span></span></span>
 <span><span class="co">#&gt;   education           birthdate           education_gpt      </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
@@ -225,9 +225,9 @@ respectively.</p>
 <span>                                    birthdate_gpt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"08/09/1978"</span>, <span class="st">"10/10/1935"</span>, <span class="st">"01/11/1957"</span><span class="op">)</span>,</span>
 <span>                                    birthdate_format <span class="op">=</span> <span class="st">"MM/DD/YYYY"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; education</span></span>
-<span><span class="co">#&gt; Input Tokens: 285</span></span>
+<span><span class="co">#&gt; Input Tokens: 277</span></span>
 <span><span class="co">#&gt; Output Tokens:31</span></span>
-<span><span class="co">#&gt; Total Tokens:316</span></span>
+<span><span class="co">#&gt; Total Tokens:308</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 3</span></span></span>
 <span><span class="co">#&gt;   education           birthdate           education_gpt      </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
@@ -309,17 +309,17 @@ Prompting with <code>clean_columns_function_call()</code></a>.</p>
 <span>                                    birthdate_gpt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"08/09/1978"</span>, <span class="st">"10/10/1935"</span>, <span class="st">"01/11/1957"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; education, birthdate</span></span>
 <span><span class="co">#&gt; Input Tokens: 408</span></span>
-<span><span class="co">#&gt; Output Tokens: 79</span></span>
-<span><span class="co">#&gt; Total Tokens: 487</span></span>
+<span><span class="co">#&gt; Output Tokens: 80</span></span>
+<span><span class="co">#&gt; Total Tokens: 488</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   education           birthdate           education_gpt       birthdate_gpt</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BA                  Sept. 19th, 1974    Bachelor's          09/19/1974   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B.A.                October 20, 1963    Bachelor's          10/20/1963   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BA                  Sept. 19th, 1974    College             09/19/1974   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B.A.                October 20, 1963    College             10/20/1963   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> GED                 3.12.1987           High School or less 12/03/1987   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Ph.D.               15 of April in 1990 Doctorate           04/15/1990   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> MD                  7/6/81              Doctorate           07/06/1981   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Master's            3rd of August, 1953 Master's            08/03/1953   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Ph.D.               15 of April in 1990 Graduate School     04/15/1990   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> MD                  7/6/81              Graduate School     07/06/1981   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Master's            3rd of August, 1953 Graduate School     08/03/1953   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> High School Diploma 2/14/1934           High School or less 02/14/1934</span></span></code></pre></div>
 </div>
 </div>
